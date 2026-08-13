@@ -1,12 +1,20 @@
 {
-  "name": "youricp-mcp-server",
+  "name": "@youricp/mcp",
   "version": "0.1.0",
   "description": "Official open-source MCP server for the YourICP contact-enrichment and audience-targeting API.",
   "type": "module",
   "bin": {
-    "youricp-mcp-server": "src/server.js"
+    "youricp-mcp": "src/server.js"
   },
   "main": "src/server.js",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test"

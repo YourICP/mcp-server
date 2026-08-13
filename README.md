@@ -31,32 +31,25 @@ build audiences directly from a conversation.
 - **Node.js 18+**
 - A **YourICP API token** — get one at [app.youricp.com](https://app.youricp.com)
 
-## Install
+## Quick start (no install)
+
+Run it directly with `npx` — no clone, no global install:
 
 ```bash
-git clone https://github.com/youricp/mcp-server.git
-cd mcp-server
-npm install
+YOURICP_API_TOKEN=your_token_here npx @youricp/mcp
 ```
-
-## Run
-
-```bash
-YOURICP_API_TOKEN=your_token_here npm start
-```
-
-Or copy `.env.example` to `.env` and fill it in, then `npm start`.
 
 ## Use with Claude Desktop
 
-Add this to your `claude_desktop_config.json`:
+Add this to your `claude_desktop_config.json` — `npx` fetches and runs the
+server automatically:
 
 ```json
 {
   "mcpServers": {
     "youricp": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-server/src/server.js"],
+      "command": "npx",
+      "args": ["-y", "@youricp/mcp"],
       "env": {
         "YOURICP_API_TOKEN": "your_token_here"
       }
@@ -66,6 +59,24 @@ Add this to your `claude_desktop_config.json`:
 ```
 
 Restart Claude Desktop and the YourICP tools will appear.
+
+## Install globally (optional)
+
+```bash
+npm install -g @youricp/mcp
+YOURICP_API_TOKEN=your_token_here youricp-mcp
+```
+
+## From source
+
+```bash
+git clone https://github.com/youricp/mcp-server.git
+cd mcp-server
+npm install
+YOURICP_API_TOKEN=your_token_here npm start
+```
+
+Or copy `.env.example` to `.env` and fill it in, then `npm start`.
 
 ---
 
