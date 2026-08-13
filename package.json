@@ -1,0 +1,39 @@
+{
+  "name": "youricp-mcp-server",
+  "version": "0.1.0",
+  "description": "Official open-source MCP server for the YourICP contact-enrichment and audience-targeting API.",
+  "type": "module",
+  "bin": {
+    "youricp-mcp-server": "src/server.js"
+  },
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "youricp",
+    "contact-enrichment",
+    "ai",
+    "claude"
+  ],
+  "author": "YourICP",
+  "license": "MIT",
+  "homepage": "https://github.com/youricp/mcp-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youricp/mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/youricp/mcp-server/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "zod": "^4.3.6"
+  }
+}
