@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.youricp/mcp-server -->
+
 # YourICP MCP Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
