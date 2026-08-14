@@ -9,23 +9,21 @@
   - Publish under a real person's byline and add the AI-assistance disclosure at the end.
 -->
 
-# Your CRM is rotting. I wired an AI agent to clean it in real time.
+# Your CRM is decaying. I wired an AI agent to clean it in real time.
 
-Every RevOps leader knows the number and hates it: B2B contact data decays at roughly 30% a year. Titles change, people move, domains die. You buy an enrichment tool, run a big batch, feel good for a quarter — and then the rot creeps back in because cleaning is a project, not a habit.
+The general consensus is that B2B contact data decays at roughly 30% a year - actually the decay rate resembles a reverse Moore's law, so half of your database is likely to be stale after 23 months. In general, people buy an enrichment tool, run a big batch, feel good for a quarter — and then they're back to square one because cleaning is a project, not a habit.
 
-I wanted to stop treating it as a project. So I connected our enrichment API directly to the AI agent I already use every day, and now cleaning happens the moment I notice a problem — inside the same chat where I'm already working.
-
-Here's how, and what changed.
+I wanted to stop treating it as a project so I connected our enrichment API directly to my AI agent of choice, and now cleaning happens the moment I notice a problem — inside the same chat where I'm already working.
 
 ## The problem with batch cleaning
 
 The traditional loop looks like this: export a segment to CSV, upload it to an enrichment vendor, wait, download the result, reconcile it against the CRM, re-import. It works, but it has two failure modes.
 
-First, **it's high-friction, so it happens rarely.** Anything that involves a CSV round-trip gets done once a quarter at best. Between runs, the data drifts.
+First, **it's high-friction, so it happens rarely.** Anything that involves a CSV round-trip is going to be a chore so the natural tendency is to delay as much as possible.
 
-Second, **it separates cleaning from the decision.** By the time you've enriched a list, you've lost the context of *why* you needed it clean. The enrichment is divorced from the work.
+Second, **it separates cleaning from the decision.** By the time you've enriched a list, you've lost the context of *why* you needed it clean.
 
-What I wanted was to enrich and clean *in the flow of the actual task* — while I'm building a list, prepping an event follow-up, or triaging inbound.
+A seamless process is to enrich and clean *in the flow of the actual task* — while I'm building a list, prepping an event follow-up, or triaging inbound.
 
 ## Enter the Model Context Protocol
 
@@ -58,15 +56,13 @@ Restart the app, and the tools show up. Cursor and the ChatGPT desktop app follo
 
 ## What the workflow actually feels like
 
-Here's a real one. After a webinar, I get a list of registrants — usually just names and personal-looking emails, half of them junk. Before, that list sat in a spreadsheet until someone found time to clean it.
-
-Now I paste it into the chat and say:
+I paste a list into the chat and say:
 
 > Enrich these 40 registrants, drop anyone without a verified business email, and give me a table with name, title, company, and company domain.
 
-The agent calls `submit_lookup`, polls `check_lookup`, filters out the unverified rows, and hands back a clean table — in one turn. No export, no re-import, no context switch. When I spot a title that looks stale, I just ask it to re-verify that one row.
+The agent calls `submit_lookup`, polls `check_lookup`, filters out the unverified rows, and hands back a clean table — in one turn. No export, no re-import, no context switch. 
 
-The shift is subtle but real: cleaning stopped being a scheduled chore and became something that happens **whenever I notice the data is wrong**. That's the difference between data hygiene as a project and data hygiene as a habit.
+The shift is subtle but real: cleaning stopped being a scheduled chore and became something that happens **whenever I notice the data is wrong**, or whenever I want to make sure my current dataset is spotless before being used. That's the difference between data hygiene as a project and data hygiene as a habit.
 
 ## Why open source matters here
 
