@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your CRM is decaying. I wired an AI agent to clean it in real time.</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;max-width:720px;margin:40px auto;padding:0 20px;line-height:1.7;color:#222}
+  h1{font-size:34px;line-height:1.2;font-family:-apple-system,Helvetica,Arial,sans-serif}
+  h2{font-size:26px;margin-top:1.6em;font-family:-apple-system,Helvetica,Arial,sans-serif}
+  code,pre{font-family:ui-monospace,Menlo,monospace}
+  pre{background:#f4f4f4;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:14px}
+  blockquote{border-left:3px solid #ccc;margin-left:0;padding-left:16px;color:#555;font-style:italic}
+</style></head>
+<body>
+<h1>Your CRM is decaying. I wired an AI agent to clean it in real time.</h1>
+<p>The general consensus is that B2B contact data decays at roughly 30% a year - actually the decay rate resembles a reverse Moore's law, so half of your database is likely to be stale after 23 months. In general, people buy an enrichment tool, run a big batch, feel good for a quarter — and then they're back to square one because cleaning is a project, not a habit.</p>
+<p>I wanted to stop treating it as a project so I connected our enrichment API directly to my AI agent of choice, and now cleaning happens the moment I notice a problem — inside the same chat where I'm already working.</p>
+<p>This is a short account of how that changed the shape of the work, how to set it up yourself, and where it does and doesn't help.</p>
+<h2>Why the data goes bad in the first place</h2>
+<p>It helps to be precise about what "decay" actually means, because it's not one problem — it's four, and they have different half-lives.</p>
+<ul>
+<li><strong>People change jobs.</strong> A verified contact from eighteen months ago may still be a real person, but the title, company, and email are now wrong. This is the biggest single source of rot in a B2B database.</li>
+<li><strong>Companies change shape.</strong> Mergers, acquisitions, rebrands, and domain migrations quietly invalidate email domains and firmographics.</li>
+<li><strong>Emails churn.</strong> Catch-all addresses go dark, mailboxes get deprovisioned, and deliverability degrades even when the person is still there.</li>
+<li><strong>Records were never clean to begin with.</strong> Form fills with personal Gmail addresses, typos, and half-filled fields enter the CRM dirty and stay that way.</li>
+</ul>
+<p>Each of these is fixable with enrichment and verification. The trouble is never the fix — it's the cadence. Fixing decay once a quarter, against something that drifts continuously, is always going to lose.</p>
+<h2>The problem with batch cleaning</h2>
+<p>The traditional loop looks like this: export a segment to CSV, upload it to an enrichment vendor, wait, download the result, reconcile it against the CRM, re-import. It works, but it has two failure modes.</p>
+<p>First, <strong>it's high-friction, so it happens rarely.</strong> Anything that involves a CSV round-trip is going to be a chore so the natural tendency is to delay as much as possible.</p>
+<p>Second, <strong>it separates cleaning from the decision.</strong> By the time you've enriched a list, you've lost the context of <em>why</em> you needed it clean.</p>
+<p>A seamless process is to enrich and clean <em>in the flow of the actual task</em> — while I'm building a list, prepping an event follow-up, or triaging inbound.</p>
+<h2>Enter the Model Context Protocol</h2>
+<p>The <a href="https://modelcontextprotocol.io">Model Context Protocol</a> (MCP) is an open standard — now supported across Claude, Cursor, and other assistants — that lets an AI agent call external tools. Instead of me copying data between systems, the agent does it.</p>
+<p>We published our enrichment API as an open-source MCP server: <a href="https://github.com/YourICP/mcp-server"><code>@youricp/mcp</code></a>. It exposes a few simple tools the agent can call on its own:</p>
+<ul>
+<li><code>submit_lookup</code> — enrich contacts by email or LinkedIn URL</li>
+<li><code>check_lookup</code> — return the verified, cleaned result</li>
+</ul>
+<p>The whole thing is MIT-licensed and runs with one command. No build step.</p>
+<h2>Setting it up (about five minutes)</h2>
+<p>You need Node.js 18+ and a YourICP API token from <a href="https://app.youricp.com">app.youricp.com</a>. Then, in your MCP client's config — this is the Claude Desktop version:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;youricp&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@youricp/mcp&quot;],
+      &quot;env&quot;: { &quot;YOURICP_API_TOKEN&quot;: &quot;your_token_here&quot; }
+    }
+  }
+}
+</code></pre>
+<p>Restart the app, and the tools show up. Cursor and the ChatGPT desktop app follow the same pattern — point them at <code>npx -y @youricp/mcp</code> with the same environment variable.</p>
+<h2>What the workflow actually feels like</h2>
+<p>I paste a list into the chat and say:</p>
+<blockquote>
+<p>Enrich these 40 registrants, drop anyone without a verified business email, and give me a table with name, title, company, and company domain.</p>
+</blockquote>
+<p>The agent calls <code>submit_lookup</code>, polls <code>check_lookup</code>, filters out the unverified rows, and hands back a clean table — in one turn. No export, no re-import, no context switch.</p>
+<p>What makes this different from a macro or a Zap is that the next step is a conversation, not a new automation. If the table comes back and I notice something off, I just say so:</p>
+<blockquote>
+<p>Three of these still show old titles — re-verify the ones at Acme and Globex, and flag anyone whose email domain doesn't match their company.</p>
+</blockquote>
+<p>The agent re-runs the relevant lookups and reconciles the result. I never left the chat, and I never had to define a rigid pipeline up front. The cleaning bent itself around the question I actually had.</p>
+<p>The shift is subtle but real: cleaning stopped being a scheduled chore and became something that happens <strong>whenever I notice the data is wrong</strong>, or whenever I want to make sure my current dataset is spotless before being used. That's the difference between data hygiene as a project and data hygiene as a habit.</p>
+<h2>How the agent chains the tools</h2>
+<p>Under the hood there's no magic — and that's the point. When I ask it to enrich a list, the agent:</p>
+<ol>
+<li>Calls <code>submit_lookup</code> with the emails or LinkedIn URLs, which returns a job identifier.</li>
+<li>Polls <code>check_lookup</code> with that identifier until the enrichment completes.</li>
+<li>Applies whatever filtering and formatting I asked for — dropping unverified rows, shaping the columns, sorting — as ordinary reasoning over the returned data.</li>
+</ol>
+<p>Because each step is a discrete, inspectable tool call, you can always ask the agent what it did and why. That transparency matters when the output is going to touch your system of record.</p>
+<h2>Keeping a human in the loop</h2>
+<p>This isn't a case for letting an agent write to your CRM unattended. The model I use keeps a person on the decision and the machine on the mechanics:</p>
+<ul>
+<li><strong>The agent proposes; you approve the write-back.</strong> Enrichment and verification are safe to automate. Overwriting a field in the CRM is not — that's a judgment call about which source wins.</li>
+<li><strong>Define what "clean" means before you start.</strong> Which fields are authoritative? What happens when the enrichment disagrees with an existing value? Answer that once, tell the agent, and it will apply it consistently.</li>
+<li><strong>Spot-check the edges.</strong> Verified-business-email filters are conservative by design; occasionally a legitimate contact gets dropped. A quick scan of what got filtered out catches those.</li>
+</ul>
+<h2>Where this fits in your stack</h2>
+<p>This doesn't replace your enrichment vendor, your CRM, or your batch jobs — it changes <em>when</em> enrichment happens. The heavy quarterly sync still has its place for wholesale coverage. What the agent adds is the in-between: the constant, low-effort, in-context cleaning that keeps the database from drifting between those big runs. Think of it as the difference between deep-cleaning your house twice a year and wiping the counter every time you cook.</p>
+<h2>Why open source matters here</h2>
+<p>You're about to route contact data through a tool. You should be able to read exactly what it does. Our server is public on <a href="https://github.com/YourICP/mcp-server">GitHub</a> — you can audit the code, fork it, or self-host it against your own credentials. There's nothing hidden between your agent and the API.</p>
+<h2>The honest limitations</h2>
+<p>This isn't magic. The agent is only as good as the enrichment behind it, and it still needs a human to decide <em>what</em> clean means for your CRM — which fields are authoritative, what to do with conflicts. What it removes is the mechanical friction: the exports, the re-imports, the waiting. That friction is exactly what kept cleaning from happening often enough to matter.</p>
+<h2>Try it</h2>
+<p>If your CRM is drifting between quarterly clean-ups, the fix isn't a bigger batch job — it's making cleaning cheap enough to do constantly. Wiring enrichment into the agent you already use is one way to get there.</p>
+<ul>
+<li>Repo: <a href="https://github.com/YourICP/mcp-server">github.com/YourICP/mcp-server</a></li>
+<li>npm: <a href="https://www.npmjs.com/package/@youricp/mcp">@youricp/mcp</a></li>
+<li>Docs: <a href="https://youricp.com/mcp">youricp.com/mcp</a></li>
+</ul>
+<hr />
+<p><em>Disclosure: this article was drafted with AI assistance and edited by a human before publishing.</em></p>
+</body></html>
