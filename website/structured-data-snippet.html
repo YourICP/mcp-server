@@ -1,0 +1,77 @@
+<!--
+  GEO structured data for https://youricp.com/mcp
+  Paste both <script> blocks into the <head> of the live page.
+  Also add the <meta name="description"> below if the page doesn't have one.
+-->
+
+<meta name="description" content="The YourICP MCP server lets AI assistants like Claude enrich, verify, and clean B2B contact data and build targeted audiences in real time. Connect via mcp.youricp.com/sse or run the open-source server with npx @youricp/mcp." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "YourICP MCP Server",
+  "alternateName": "@youricp/mcp",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Model Context Protocol Server",
+  "operatingSystem": "Cross-platform (any MCP-compatible client)",
+  "description": "The official YourICP Model Context Protocol (MCP) server. Lets AI assistants such as Claude enrich, verify, and clean B2B contact data and build targeted audiences directly from a chat interface — by email, LinkedIn URL, or filter-based audience building.",
+  "url": "https://youricp.com/mcp",
+  "codeRepository": "https://github.com/YourICP/mcp-server",
+  "downloadUrl": "https://www.npmjs.com/package/@youricp/mcp",
+  "installUrl": "https://www.npmjs.com/package/@youricp/mcp",
+  "license": "https://opensource.org/licenses/MIT",
+  "keywords": "B2B data cleaning, contact enrichment, CRM enrichment, data verification, audience building, Model Context Protocol, MCP server, AI agents, Claude",
+  "featureList": [
+    "B2B contact data cleaning and verification",
+    "Contact enrichment by email or LinkedIn URL",
+    "CRM data enrichment",
+    "Filter-based audience building with free previews",
+    "Model Context Protocol (MCP) — Streamable HTTP and stdio transports",
+    "Pay-per-use via Stripe, or bring your own YourICP API token"
+  ],
+  "author": {
+    "@type": "Organization",
+    "name": "YourICP",
+    "url": "https://youricp.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "YourICP",
+    "url": "https://youricp.com"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the YourICP MCP server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is the official Model Context Protocol (MCP) server for YourICP. It lets AI assistants such as Claude enrich, verify, and clean B2B contact data and build targeted audiences directly from a chat interface."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I connect the YourICP MCP server to Claude?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Add the connector URL https://mcp.youricp.com/sse in Claude, or run the open-source server locally with `npx @youricp/mcp` and a YourICP API token from app.youricp.com."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the YourICP MCP server clean CRM and contact data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. It verifies and enriches B2B contact records by email or LinkedIn URL, so AI agents can clean, dedupe, and enrich CRM data in real time."
+      }
+    }
+  ]
+}
+</script>
