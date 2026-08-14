@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.youricp/mcp-server",
+  "name": "com.youricp/mcp-server",
   "title": "YourICP",
   "description": "Official MCP server for the YourICP contact-enrichment and audience-targeting API.",
   "version": "0.1.0",

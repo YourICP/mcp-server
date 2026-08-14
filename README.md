@@ -1,4 +1,4 @@
-<!-- mcp-name: io.github.youricp/mcp-server -->
+<!-- mcp-name: com.youricp/mcp-server -->
 
 # YourICP MCP Server
 
