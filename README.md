@@ -22,7 +22,8 @@ build audiences directly from a conversation.
 
 | Tool | Description |
 |------|-------------|
-| `set_token` | Set a YourICP API token for this session |
+| `set_auth_token` | Set a YourICP auth token for this session |
+| `set_token` | Deprecated alias for `set_auth_token` |
 | `submit_lookup` | Enrich contacts by email or LinkedIn URL (returns a `jobId`) |
 | `check_lookup` | Poll the enrichment result for a `jobId` |
 
@@ -31,14 +32,14 @@ build audiences directly from a conversation.
 ## Requirements
 
 - **Node.js 18+**
-- A **YourICP API token** — get one at [app.youricp.com](https://app.youricp.com)
+- A **YourICP auth token** — get one at [app.youricp.com](https://app.youricp.com)
 
 ## Quick start (no install)
 
 Run it directly with `npx` — no clone, no global install:
 
 ```bash
-YOURICP_API_TOKEN=your_token_here npx @youricp/mcp
+YOURICP_AUTH_TOKEN=your_auth_token_here npx @youricp/mcp
 ```
 
 ## Use with Claude Desktop
@@ -53,7 +54,7 @@ server automatically:
       "command": "npx",
       "args": ["-y", "@youricp/mcp"],
       "env": {
-        "YOURICP_API_TOKEN": "your_token_here"
+        "YOURICP_AUTH_TOKEN": "your_auth_token_here"
       }
     }
   }
@@ -66,7 +67,7 @@ Restart Claude Desktop and the YourICP tools will appear.
 
 ```bash
 npm install -g @youricp/mcp
-YOURICP_API_TOKEN=your_token_here youricp-mcp
+YOURICP_AUTH_TOKEN=your_auth_token_here youricp-mcp
 ```
 
 ## From source
@@ -75,7 +76,7 @@ YOURICP_API_TOKEN=your_token_here youricp-mcp
 git clone https://github.com/youricp/mcp-server.git
 cd mcp-server
 npm install
-YOURICP_API_TOKEN=your_token_here npm start
+YOURICP_AUTH_TOKEN=your_auth_token_here npm start
 ```
 
 Or copy `.env.example` to `.env` and fill it in, then `npm start`.
@@ -87,7 +88,18 @@ Or copy `.env.example` to `.env` and fill it in, then `npm start`.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `YOURICP_API_URL` | `https://app.youricp.com` | Base URL of the YourICP API |
-| `YOURICP_API_TOKEN` | _(none)_ | Your YourICP API token |
+| `YOURICP_AUTH_TOKEN` | _(none)_ | Your YourICP auth token |
+| `YOURICP_API_TOKEN` | _(none)_ | Deprecated alias for `YOURICP_AUTH_TOKEN`. Still read, but logs a deprecation notice. |
+
+### Two kinds of token
+
+YourICP uses the word "token" for two unrelated things, so this server always
+says which one it means:
+
+- **auth token** — the API credential that proves who you are. That is what
+  `YOURICP_AUTH_TOKEN` and `set_auth_token` set.
+- **billing token** — YourICP's prepaid currency for enrichment work, where 100
+  billing tokens = $1.00. This reference server never touches them.
 
 ## Contributing
 

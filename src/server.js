@@ -6,12 +6,20 @@
  * YourICP contact-enrichment API to MCP-compatible AI clients such as
  * Claude Desktop.
  *
+ * TWO KINDS OF TOKEN, NEVER THE BARE WORD
+ * ---------------------------------------
+ * YourICP uses "token" for two unrelated things, and this file only ever deals
+ * with the first:
+ *   - AUTH TOKEN    the credential proving who you are (what this server sets)
+ *   - BILLING TOKEN the prepaid currency YourICP work is charged in (100 = $1.00)
+ *
  * Configuration (environment variables):
- *   YOURICP_API_URL    Base URL of the YourICP API (default: https://app.youricp.com)
- *   YOURICP_API_TOKEN  Your YourICP API token. Get one at https://app.youricp.com
+ *   YOURICP_API_URL     Base URL of the YourICP API (default: https://app.youricp.com)
+ *   YOURICP_AUTH_TOKEN  Your YourICP auth token. Get one at https://app.youricp.com
+ *   YOURICP_API_TOKEN   Deprecated alias for YOURICP_AUTH_TOKEN.
  *
  * Run it:
- *   YOURICP_API_TOKEN=xxxx node src/server.js
+ *   YOURICP_AUTH_TOKEN=xxxx node src/server.js
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -20,20 +28,37 @@ import { z } from "zod";
 
 const API_URL = (process.env.YOURICP_API_URL ?? "https://app.youricp.com").replace(/\/$/, "");
 
-// The token can be provided via env or set at runtime with the `set_token` tool.
-let apiToken = process.env.YOURICP_API_TOKEN ?? "";
+// YOURICP_AUTH_TOKEN is the name; YOURICP_API_TOKEN keeps working because
+// existing installs set it in their client config and a hard cutover would
+// break every one of them on upgrade. The notice fires once per process, so it
+// is visible without drowning stderr.
+function readAuthTokenFromEnv() {
+  if (process.env.YOURICP_AUTH_TOKEN) return process.env.YOURICP_AUTH_TOKEN;
+  if (process.env.YOURICP_API_TOKEN) {
+    console.error(
+      "Deprecation notice: YOURICP_API_TOKEN is deprecated — rename it to " +
+        "YOURICP_AUTH_TOKEN. The old name still works for now."
+    );
+    return process.env.YOURICP_API_TOKEN;
+  }
+  return "";
+}
+
+// The auth token comes from the environment, or is set at runtime with the
+// `set_auth_token` tool.
+let authToken = readAuthTokenFromEnv();
 
 /** Small helper around the YourICP REST API. */
 async function api(path, { method = "GET", body } = {}) {
-  if (!apiToken) {
+  if (!authToken) {
     throw new Error(
-      "No API token configured. Set YOURICP_API_TOKEN, or call the `set_token` tool first."
+      "No auth token configured. Set YOURICP_AUTH_TOKEN, or call the `set_auth_token` tool first."
     );
   }
   const res = await fetch(`${API_URL}${path}`, {
     method,
     headers: {
-      Authorization: `Bearer ${apiToken}`,
+      Authorization: `Bearer ${authToken}`,
       "Content-Type": "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
@@ -56,14 +81,29 @@ const server = new McpServer({
   version: "0.1.0",
 });
 
+// --- set_auth_token, and its deprecated alias -----------------------------
+// Both names run the same handler. An MCP tool name is a wire contract —
+// clients and saved agent instructions already say `set_token` — so it stays
+// callable and is marked deprecated in its description instead of removed.
+
+function setAuthToken(token) {
+  authToken = token.trim();
+  return { content: [{ type: "text", text: "Auth token set for this session." }] };
+}
+
+server.tool(
+  "set_auth_token",
+  "Set the YourICP auth token for this session. This is your API credential, not " +
+    "YourICP billing tokens. Get one at https://app.youricp.com.",
+  { token: z.string().min(1).describe("Your YourICP auth token") },
+  async ({ token }) => setAuthToken(token)
+);
+
 server.tool(
   "set_token",
-  "Set the YourICP API token for this session. Get one at https://app.youricp.com.",
-  { token: z.string().min(1).describe("Your YourICP API token") },
-  async ({ token }) => {
-    apiToken = token.trim();
-    return { content: [{ type: "text", text: "API token set for this session." }] };
-  }
+  "Deprecated — call set_auth_token instead. Sets the YourICP auth token for this session.",
+  { token: z.string().min(1).describe("Your YourICP auth token") },
+  async ({ token }) => setAuthToken(token)
 );
 
 server.tool(

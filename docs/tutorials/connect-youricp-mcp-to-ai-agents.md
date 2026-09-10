@@ -18,14 +18,14 @@ The [Model Context Protocol](https://modelcontextprotocol.io) (MCP) is an open s
 
 | Tool | What it does |
 |------|--------------|
-| `set_token` | Sets your YourICP API token for the session |
+| `set_auth_token` | Sets your YourICP auth token for the session |
 | `submit_lookup` | Enriches contacts by email or LinkedIn URL |
 | `check_lookup` | Returns the enriched, cleaned result |
 
 ## Prerequisites
 
 - **Node.js 18+** installed ([nodejs.org](https://nodejs.org))
-- A **YourICP API token** — grab one at [app.youricp.com](https://app.youricp.com)
+- A **YourICP auth token** — grab one at [app.youricp.com](https://app.youricp.com)
 
 That's it. The server runs via `npx`, so there's nothing to clone or compile.
 
@@ -34,7 +34,7 @@ That's it. The server runs via `npx`, so there's nothing to clone or compile.
 Confirm everything works with a single command:
 
 ```bash
-YOURICP_API_TOKEN=your_token_here npx @youricp/mcp
+YOURICP_AUTH_TOKEN=your_auth_token_here npx @youricp/mcp
 ```
 
 You should see `YourICP MCP server running on stdio`. Press `Ctrl+C` to stop — now let's wire it into an agent.
@@ -54,7 +54,7 @@ Add the YourICP server:
     "youricp": {
       "command": "npx",
       "args": ["-y", "@youricp/mcp"],
-      "env": { "YOURICP_API_TOKEN": "your_token_here" }
+      "env": { "YOURICP_AUTH_TOKEN": "your_auth_token_here" }
     }
   }
 }
@@ -74,7 +74,7 @@ Cursor supports MCP servers through its settings. Add the same block to Cursor's
     "youricp": {
       "command": "npx",
       "args": ["-y", "@youricp/mcp"],
-      "env": { "YOURICP_API_TOKEN": "your_token_here" }
+      "env": { "YOURICP_AUTH_TOKEN": "your_auth_token_here" }
     }
   }
 }
@@ -88,7 +88,7 @@ In the ChatGPT desktop app, open **Settings → Connectors / MCP**, add a new st
 
 - **Command:** `npx`
 - **Arguments:** `-y @youricp/mcp`
-- **Environment:** `YOURICP_API_TOKEN=your_token_here`
+- **Environment:** `YOURICP_AUTH_TOKEN=your_auth_token_here`
 
 ## A real workflow
 
