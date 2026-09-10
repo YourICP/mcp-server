@@ -83,7 +83,7 @@
         "name": "How do I install the YourICP MCP server?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Run it with npx: `npx @youricp/mcp`. Set the YOURICP_API_TOKEN environment variable with a token from app.youricp.com. No global install or clone is required."
+          "text": "Run it with npx: `npx @youricp/mcp`. Set the YOURICP_AUTH_TOKEN environment variable with a token from app.youricp.com. No global install or clone is required."
         }
       },
       {
@@ -231,7 +231,7 @@
       <table>
         <thead><tr><th>Tool</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>set_token</code></td><td>Set a YourICP API token for the session</td></tr>
+          <tr><td><code>set_auth_token</code></td><td>Set a YourICP auth token for the session</td></tr>
           <tr><td><code>submit_lookup</code></td><td>Enrich contacts by email or LinkedIn URL (returns a job ID)</td></tr>
           <tr><td><code>check_lookup</code></td><td>Poll the enrichment result for a job ID</td></tr>
         </tbody>
@@ -243,8 +243,8 @@
     <div class="wrap">
       <div class="eyebrow">Quick start</div>
       <h2>Run it with one command</h2>
-      <p>No clone, no global install. You need Node.js 18+ and a YourICP API token from <a href="https://app.youricp.com">app.youricp.com</a>.</p>
-      <pre><code>YOURICP_API_TOKEN=your_token_here npx @youricp/mcp</code></pre>
+      <p>No clone, no global install. You need Node.js 18+ and a YourICP auth token from <a href="https://app.youricp.com">app.youricp.com</a>.</p>
+      <pre><code>YOURICP_AUTH_TOKEN=your_auth_token_here npx @youricp/mcp</code></pre>
 
       <h3 style="margin-top:40px">Connect to Claude Desktop</h3>
       <p style="color:var(--gray-600);font-size:15px">Add this to your <code>claude_desktop_config.json</code>, then restart Claude Desktop:</p>
@@ -253,7 +253,7 @@
     "youricp": {
       "command": "npx",
       "args": ["-y", "@youricp/mcp"],
-      "env": { "YOURICP_API_TOKEN": "your_token_here" }
+      "env": { "YOURICP_AUTH_TOKEN": "your_auth_token_here" }
     }
   }
 }</code></pre>
@@ -271,7 +271,7 @@
       <div class="eyebrow">How it works</div>
       <h2>From raw contact to verified record</h2>
       <div class="steps">
-        <div class="step"><h3>Connect the server</h3><p style="color:var(--gray-600)">Add YourICP to your MCP client with the config above and your API token.</p></div>
+        <div class="step"><h3>Connect the server</h3><p style="color:var(--gray-600)">Add YourICP to your MCP client with the config above and your auth token.</p></div>
         <div class="step"><h3>Ask your agent to enrich</h3><p style="color:var(--gray-600)">"Enrich these five emails and clean the results" — the agent calls <code>submit_lookup</code>.</p></div>
         <div class="step"><h3>Get verified data back</h3><p style="color:var(--gray-600)">The agent polls <code>check_lookup</code> and returns clean, enriched records ready for your CRM.</p></div>
       </div>
