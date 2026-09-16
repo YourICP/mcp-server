@@ -40,10 +40,31 @@ jobs:
           SRV_NAME=$(node -p "require('./server.json').name")
           test "$MCP_NAME" = "$SRV_NAME" || { echo "::error::package.json mcpName must equal server.json name"; exit 1; }
 
+      # Skipped when the version is already on npm, so a failed run can be
+      # re-run without dying on EPUBLISHCONFLICT before it reaches the registry.
       - name: Publish to npm
-        run: npm publish --access public
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "@youricp/mcp@$VERSION" version >/dev/null 2>&1; then
+            echo "@youricp/mcp@$VERSION already on npm, skipping publish"
+          else
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # The registry verifies the npm version exists before accepting the entry,
+      # and npm's read replicas lag publishes by a few minutes.
+      - name: Wait for npm to propagate
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          for i in $(seq 1 40); do
+            if curl -fsS -o /dev/null "https://registry.npmjs.org/@youricp/mcp/$VERSION"; then
+              echo "$VERSION visible on npm"; exit 0
+            fi
+            echo "waiting for $VERSION to appear on npm..."; sleep 15
+          done
+          echo "::error::npm did not surface $VERSION within 10 minutes"; exit 1
 
       - name: Install mcp-publisher
         run: |
