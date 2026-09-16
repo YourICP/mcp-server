@@ -38,13 +38,13 @@
 </ul>
 <p>The whole thing is MIT-licensed and runs with one command. No build step.</p>
 <h2>Setting it up (about five minutes)</h2>
-<p>You need Node.js 18+ and a YourICP API token from <a href="https://app.youricp.com">app.youricp.com</a>. Then, in your MCP client's config — this is the Claude Desktop version:</p>
+<p>You need Node.js 18+ and a YourICP auth token from <a href="https://app.youricp.com">app.youricp.com</a>. Then, in your MCP client's config — this is the Claude Desktop version:</p>
 <pre><code class="language-json">{
   &quot;mcpServers&quot;: {
     &quot;youricp&quot;: {
       &quot;command&quot;: &quot;npx&quot;,
       &quot;args&quot;: [&quot;-y&quot;, &quot;@youricp/mcp&quot;],
-      &quot;env&quot;: { &quot;YOURICP_API_TOKEN&quot;: &quot;your_token_here&quot; }
+      &quot;env&quot;: { &quot;YOURICP_AUTH_TOKEN&quot;: &quot;your_auth_token_here&quot; }
     }
   }
 }

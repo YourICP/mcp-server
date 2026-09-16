@@ -51,7 +51,7 @@ The whole thing is MIT-licensed and runs with one command. No build step.
 
 ## Setting it up (about five minutes)
 
-You need Node.js 18+ and a YourICP API token from [app.youricp.com](https://app.youricp.com). Then, in your MCP client's config — this is the Claude Desktop version:
+You need Node.js 18+ and a YourICP auth token from [app.youricp.com](https://app.youricp.com). Then, in your MCP client's config — this is the Claude Desktop version:
 
 ```json
 {
@@ -59,7 +59,7 @@ You need Node.js 18+ and a YourICP API token from [app.youricp.com](https://app.
     "youricp": {
       "command": "npx",
       "args": ["-y", "@youricp/mcp"],
-      "env": { "YOURICP_API_TOKEN": "your_token_here" }
+      "env": { "YOURICP_AUTH_TOKEN": "your_auth_token_here" }
     }
   }
 }
