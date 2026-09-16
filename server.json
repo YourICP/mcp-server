@@ -2,19 +2,35 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.youricp/mcp-server",
   "title": "YourICP",
-  "description": "Official MCP server for the YourICP contact-enrichment and audience-targeting API.",
-  "version": "0.1.0",
-  "websiteUrl": "https://app.youricp.com",
+  "description": "Enrich contacts by email or LinkedIn URL and build targeted B2B audiences.",
+  "version": "0.1.2",
+  "websiteUrl": "https://youricp.com/mcp",
   "repository": {
     "url": "https://github.com/YourICP/mcp-server",
-    "source": "github"
+    "source": "github",
+    "id": "1333133986"
   },
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/YourICP/mcp-server/main/YourICP_Icon.png",
+      "sizes": [
+        "400x400"
+      ],
+      "mimeType": "image/png"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.youricp.com/sse"
+    }
+  ],
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@youricp/mcp",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "transport": {
         "type": "stdio"
       },

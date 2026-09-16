@@ -1,0 +1,61 @@
+name: Publish
+
+# Publishes the npm package and the MCP Registry entry from one tag.
+# Tag with the version, e.g.  git tag v0.1.1 && git push origin v0.1.1
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - run: npm install
+      - run: npm test
+
+      - name: Check tag matches package.json version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          SRV=$(node -p "require('./server.json').version")
+          PKG_IN_SRV=$(node -p "require('./server.json').packages[0].version")
+          echo "tag=$TAG package.json=$PKG server.json=$SRV server.json.packages[0]=$PKG_IN_SRV"
+          test "$TAG" = "$PKG" || { echo "::error::tag does not match package.json version"; exit 1; }
+          test "$TAG" = "$SRV" || { echo "::error::tag does not match server.json version"; exit 1; }
+          test "$TAG" = "$PKG_IN_SRV" || { echo "::error::tag does not match server.json packages[0].version"; exit 1; }
+
+      - name: Check mcpName matches server.json name
+        run: |
+          MCP_NAME=$(node -p "require('./package.json').mcpName")
+          SRV_NAME=$(node -p "require('./server.json').name")
+          test "$MCP_NAME" = "$SRV_NAME" || { echo "::error::package.json mcpName must equal server.json name"; exit 1; }
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz \
+            | tar xz mcp-publisher
+          sudo mv mcp-publisher /usr/local/bin/
+
+      # Namespace is com.youricp/*, so CI authenticates by DNS, not GitHub OIDC.
+      # MCP_REGISTRY_DNS_KEY is the 64-char hex Ed25519 private key whose public
+      # half is published in the youricp.com TXT record.
+      - name: Publish to the MCP Registry
+        run: |
+          mcp-publisher login dns \
+            --domain=youricp.com \
+            --private-key="${{ secrets.MCP_REGISTRY_DNS_KEY }}"
+          mcp-publisher publish
