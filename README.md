@@ -10,11 +10,33 @@ The official, open-source [Model Context Protocol](https://modelcontextprotocol.
 audience-targeting API. It lets AI assistants such as Claude enrich contacts and
 build audiences directly from a conversation.
 
-> This is a **reference implementation** using the `stdio` transport, designed to
-> run locally with clients like Claude Desktop. It authenticates with a plain API
-> token — no payment, OAuth, or hosting infrastructure required. For the fully
-> hosted remote connector (Streamable HTTP, OAuth 2.0 + PKCE, pay-per-use), see
-> [app.youricp.com](https://app.youricp.com).
+---
+
+## Two ways to run it
+
+| | This repo (`@youricp/mcp`) | Hosted connector |
+|---|---|---|
+| Transport | `stdio`, runs on your machine | Streamable HTTP |
+| Auth | Paste an API token | OAuth 2.0 + PKCE, browser login |
+| Tools | Contact enrichment | Enrichment **and** audience building |
+| Billing | Your existing YourICP plan | Pay-per-use, or your plan |
+| Setup | Edit a JSON config file | Paste one URL |
+
+**Use the hosted connector** unless you specifically want to run the code
+yourself. It needs no install, stays up to date, and is the only option that
+exposes the audience-building tools:
+
+```
+https://mcp.youricp.com/sse
+```
+
+Add it in Claude under **Settings → Connectors → Add custom connector**. See the
+[connector user guide](https://mcp.youricp.com/docs) for what you can ask it.
+
+**Use this repo** if you want to read or modify the code, self-host, run fully
+offline against your own token, or use a client that only supports `stdio`. It
+is a deliberately small reference implementation — no payment, OAuth, or hosting
+infrastructure required.
 
 ---
 

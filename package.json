@@ -1,7 +1,7 @@
 {
   "name": "@youricp/mcp",
   "mcpName": "com.youricp/mcp-server",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Official open-source MCP server for the YourICP contact-enrichment and audience-targeting API.",
   "type": "module",
   "bin": {
